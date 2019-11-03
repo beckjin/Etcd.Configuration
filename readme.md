@@ -37,7 +37,7 @@ PM> Install-Package Etcd.Configuration
 
 # Web Application
 
-[See sample for details](https://github.com/beckjin/Etcd.Configuration/samples/Etcd.Configuration.API)
+[See sample for details](https://github.com/beckjin/Etcd.Configuration/tree/master/samples/Etcd.Configuration.API)
 
 ```
 public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -54,7 +54,7 @@ public static IHostBuilder CreateHostBuilder(string[] args) =>
 
 # Console Application
 
-[See sample for details](https://github.com/beckjin/Etcd.Configuration/samples/Etcd.Configuration.Console)
+[See sample for details](https://github.com/beckjin/Etcd.Configuration/tree/master/samples/Etcd.Configuration.Console)
 
 ```
 private static IConfiguration GetConfiguration()
