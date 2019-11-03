@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 
 namespace Etcd.Configuration
 {
-    public interface IConfigRepository : IDisposable
+    public interface IConfigrationRepository : IDisposable
     {
         void Initialize();
 

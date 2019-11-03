@@ -7,14 +7,14 @@ using System.Linq;
 
 namespace Etcd.Configuration
 {
-    public class EtcdConfigRepository : IConfigRepository
+    public class EtcdConfigurationRepository : IConfigrationRepository
     {
         private readonly EtcdOptions _etcdOptions;
         private readonly EtcdClient _etcdClient;
 
         private readonly List<IConfigrationWatcher> _watchers = new List<IConfigrationWatcher>();
 
-        public EtcdConfigRepository(EtcdOptions etcdOptions)
+        public EtcdConfigurationRepository(EtcdOptions etcdOptions)
         {
             if (etcdOptions.Hosts == null || !etcdOptions.Hosts.Any())
             {
@@ -119,7 +119,7 @@ namespace Etcd.Configuration
             GC.SuppressFinalize(this);
         }
 
-        ~EtcdConfigRepository()
+        ~EtcdConfigurationRepository()
         {
             Dispose(false);
         }

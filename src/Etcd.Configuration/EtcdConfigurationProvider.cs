@@ -4,9 +4,9 @@ namespace Etcd.Configuration
 {
     public class EtcdConfigurationProvider : ConfigurationProvider, IConfigurationSource, IConfigrationWatcher
     {
-        private readonly IConfigRepository _configRepository;
+        private readonly IConfigrationRepository _configRepository;
 
-        public EtcdConfigurationProvider(IConfigRepository configRepository)
+        public EtcdConfigurationProvider(IConfigrationRepository configRepository)
         {
             _configRepository = configRepository;
             _configRepository.AddWatcher(this);

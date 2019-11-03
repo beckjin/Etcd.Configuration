@@ -6,7 +6,7 @@ namespace Etcd.Configuration
     {
         public static IConfigurationBuilder AddEtcd(this IConfigurationBuilder builder, IConfiguration etcdConfiguration)
         {
-            var configRepository = new EtcdConfigRepository(etcdConfiguration.Get<EtcdOptions>());
+            var configRepository = new EtcdConfigurationRepository(etcdConfiguration.Get<EtcdOptions>());
             return builder.Add(new EtcdConfigurationProvider(configRepository));
         }
     }
