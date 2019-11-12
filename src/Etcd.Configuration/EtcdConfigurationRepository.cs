@@ -1,9 +1,9 @@
 ﻿using dotnet_etcd;
 using Etcdserverpb;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Etcd.Configuration
 {
@@ -27,30 +27,34 @@ namespace Etcd.Configuration
             }
 
             _etcdOptions = etcdOptions;
-            _etcdClient = new EtcdClient(string.Join(",", _etcdOptions.Hosts), 
-                username: _etcdOptions.Username, 
-                password: _etcdOptions.Password, 
-                caCert: _etcdOptions.CaCert, 
-                clientCert: _etcdOptions.ClientCert, 
+            _etcdClient = new EtcdClient(string.Join(",", _etcdOptions.Hosts),
+                username: _etcdOptions.Username,
+                password: _etcdOptions.Password,
+                caCert: _etcdOptions.CaCert,
+                clientCert: _etcdOptions.ClientCert,
                 clientKey: _etcdOptions.ClientKey,
                 publicRootCa: _etcdOptions.PublicRootCa);
         }
 
-        public void Initialize()
+        public async Task Initialize()
         {
-            // watching 
-            _etcdClient.WatchRange(_etcdOptions.PrefixKeys.ToArray(), (WatchResponse response) =>
+            await Task.Run(() =>
             {
-                if (response.Events.Count > 0)
+                // watching 
+                _etcdClient.WatchRange(_etcdOptions.PrefixKeys.ToArray(), (WatchResponse response) =>
                 {
-                    FireChange();
-                }
+                    if (response.Events.Count > 0)
+                    {
+                        FireChange();
+                    }
+                });
             });
+
         }
 
-        public ConcurrentDictionary<string, string> GetConfig()
+        public IDictionary<string, string> GetConfig()
         {
-            var configs = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var configs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             foreach (var prefixKey in _etcdOptions.PrefixKeys)
             {
@@ -65,7 +69,7 @@ namespace Etcd.Configuration
                     }
                     else
                     {
-                        configs.TryAdd(key, val);
+                        configs.Add(key, val);
                     }
                 }
             }

@@ -1,13 +1,14 @@
 ﻿using System;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Etcd.Configuration
 {
     public interface IConfigrationRepository : IDisposable
     {
-        void Initialize();
+        Task Initialize();
 
-        ConcurrentDictionary<string, string> GetConfig();
+        IDictionary<string, string> GetConfig();
 
         void AddWatcher(IConfigrationWatcher watcher);
 
