@@ -10,12 +10,12 @@ namespace Etcd.Configuration
         /// <summary>
         /// Etcd hosts
         /// </summary>
-        public List<string> Hosts { get; set; }
+        public List<string> Hosts { get; set; } = new List<string>();
 
         /// <summary>
         /// config prefixKeys
         /// </summary>
-        public List<string> PrefixKeys { get; set; }
+        public List<string> PrefixKeys { get; set; } = new List<string>();
 
         /// <summary>
         /// String containing username for etcd basic auth. Default : Empty String

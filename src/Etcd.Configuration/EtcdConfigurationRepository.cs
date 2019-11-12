@@ -16,12 +16,12 @@ namespace Etcd.Configuration
 
         public EtcdConfigurationRepository(EtcdOptions etcdOptions)
         {
-            if (etcdOptions.Hosts == null || !etcdOptions.Hosts.Any())
+            if (!etcdOptions.Hosts.Any())
             {
                 throw new ArgumentNullException("etcd hosts can't be null");
             }
 
-            if (etcdOptions.PrefixKeys == null || !etcdOptions.PrefixKeys.Any())
+            if (!etcdOptions.PrefixKeys.Any())
             {
                 throw new ArgumentNullException("etcd prefixKeys can't be null");
             }
