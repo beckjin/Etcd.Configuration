@@ -2,6 +2,6 @@
 {
     public interface IConfigrationWatcher
     {
-        void OnChange();
+        void FireChange();
     }
 }

@@ -1,39 +1,33 @@
 ﻿using Microsoft.Extensions.Configuration;
-using System.Threading;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Primitives;
 
 namespace Etcd.Configuration
 {
     public class EtcdConfigurationProvider : ConfigurationProvider, IConfigurationSource, IConfigrationWatcher
     {
         private readonly IConfigrationRepository _configRepository;
-        private Task? _initializeTask;
 
-        public EtcdConfigurationProvider(IConfigrationRepository configRepository)
+        public EtcdConfigurationProvider(IConfigrationRepository configRepository, bool reloadOnChange)
         {
             _configRepository = configRepository;
-            _configRepository.AddWatcher(this);
-            _initializeTask = _configRepository.Initialize();
+
+            if (reloadOnChange)
+            {
+                _configRepository.Watch(this);
+
+                ChangeToken.OnChange(
+                    () => GetReloadToken(),
+                    () => Load()
+                );
+            }
         }
 
         public override void Load()
         {
-            Interlocked.Exchange(ref _initializeTask, null)?.ConfigureAwait(false).GetAwaiter().GetResult();
-
-            SetData();
-        }
-
-        private void SetData()
-        {
             Data = _configRepository.GetConfig();
         }
 
-        public void OnChange()
-        {
-            SetData();
-
-            OnReload();
-        }
+        public void FireChange() => OnReload();
 
         public IConfigurationProvider Build(IConfigurationBuilder builder) => this;
     }

@@ -21,6 +21,7 @@ namespace Etcd.Configuration.Console
 
             while (true)
             {
+                // /namespace1/company
                 var key = System.Console.ReadLine();
                 if (string.IsNullOrEmpty(key))
                 {
@@ -52,7 +53,7 @@ namespace Etcd.Configuration.Console
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile($"appsettings.json", optional: true);
 
-            builder.AddEtcd(builder.Build().GetSection("etcd"));
+            builder.AddEtcd(builder.Build().GetSection("etcd"), true);
 
             return builder.Build();
         }

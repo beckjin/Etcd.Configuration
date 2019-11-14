@@ -18,7 +18,6 @@
     <SignAssembly>true</SignAssembly>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <Nullable>enable</Nullable>
     <Copyright>Copyright © 2019</Copyright>
   </PropertyGroup>
 
@@ -26,10 +25,6 @@
     <PackageReference Include="dotnet-etcd" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.1" />
-    <PackageReference Include="Nullable" Version="1.1.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
   </ItemGroup>
 
 </Project>

@@ -12,16 +12,14 @@ namespace Etcd.Configuration
         private readonly EtcdOptions _etcdOptions;
         private readonly EtcdClient _etcdClient;
 
-        private readonly List<IConfigrationWatcher> _watchers = new List<IConfigrationWatcher>();
-
         public EtcdConfigurationRepository(EtcdOptions etcdOptions)
         {
-            if (!etcdOptions.Hosts.Any())
+            if (etcdOptions.Hosts == null || !etcdOptions.Hosts.Any())
             {
                 throw new ArgumentNullException("etcd hosts can't be null");
             }
 
-            if (!etcdOptions.PrefixKeys.Any())
+            if (etcdOptions.PrefixKeys == null || !etcdOptions.PrefixKeys.Any())
             {
                 throw new ArgumentNullException("etcd prefixKeys can't be null");
             }
@@ -36,22 +34,6 @@ namespace Etcd.Configuration
                 publicRootCa: _etcdOptions.PublicRootCa);
         }
 
-        public async Task Initialize()
-        {
-            await Task.Run(() =>
-            {
-                // watching 
-                _etcdClient.WatchRange(_etcdOptions.PrefixKeys.ToArray(), (WatchResponse response) =>
-                {
-                    if (response.Events.Count > 0)
-                    {
-                        FireChange();
-                    }
-                });
-            });
-
-        }
-
         public IDictionary<string, string> GetConfig()
         {
             var configs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -61,8 +43,14 @@ namespace Etcd.Configuration
                 var kvs = _etcdClient.GetRange(prefixKey).Kvs;
                 foreach (var item in kvs)
                 {
-                    var key = item.Key.ToStringUtf8().Replace(prefixKey, string.Empty);
+                    var key = item.Key.ToStringUtf8();
                     var val = item.Value.ToStringUtf8();
+
+                    if (_etcdOptions.KeyMode == EtcdConfigrationKeyMode.Json)
+                    {
+                        key = $"{prefixKey}:{key.Replace(prefixKey, string.Empty)}";
+                    }
+
                     if (configs.ContainsKey(key))
                     {
                         configs[key] = val;
@@ -77,28 +65,18 @@ namespace Etcd.Configuration
             return configs;
         }
 
-        public void AddWatcher(IConfigrationWatcher watcher)
+        public void Watch(IConfigrationWatcher watcher)
         {
-            lock (_watchers)
-                if (!_watchers.Contains(watcher))
+            Task.Run(() =>
+            {
+                _etcdClient.WatchRange(_etcdOptions.PrefixKeys.ToArray(), (WatchResponse response) =>
                 {
-                    _watchers.Add(watcher);
-                }
-        }
-
-        public void RemoveWatcher(IConfigrationWatcher watcher)
-        {
-            lock (_watchers)
-                _watchers.Remove(watcher);
-        }
-
-        protected void FireChange()
-        {
-            lock (_watchers)
-                foreach (var watcher in _watchers)
-                {
-                    watcher.OnChange();
-                }
+                    if (response.Events.Count > 0)
+                    {
+                        watcher.FireChange();
+                    }
+                });
+            });
         }
 
         #region Dispose

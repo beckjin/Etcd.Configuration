@@ -10,12 +10,12 @@ namespace Etcd.Configuration
         /// <summary>
         /// Etcd hosts
         /// </summary>
-        public List<string> Hosts { get; set; } = new List<string>();
+        public List<string> Hosts { get; set; }
 
         /// <summary>
         /// config prefixKeys
         /// </summary>
-        public List<string> PrefixKeys { get; set; } = new List<string>();
+        public List<string> PrefixKeys { get; set; }
 
         /// <summary>
         /// String containing username for etcd basic auth. Default : Empty String
@@ -46,5 +46,10 @@ namespace Etcd.Configuration
         /// Bool depicting whether to use publicy trusted roots to connect to etcd. Default : false.
         /// </summary>
         public bool PublicRootCa { get; set; }
+
+        /// <summary>
+        /// Set config key mode
+        /// </summary>
+        public EtcdConfigrationKeyMode KeyMode { get; set; }
     }
 }

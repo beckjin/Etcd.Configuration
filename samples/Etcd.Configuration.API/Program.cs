@@ -16,7 +16,7 @@ namespace Etcd.Configuration.API
                 {
                     webBuilder.ConfigureAppConfiguration(builder =>
                     {
-                        builder.AddEtcd(builder.Build().GetSection("etcd"));
+                        builder.AddEtcd(builder.Build().GetSection("etcd"), true);
                     });
                     webBuilder.UseStartup<Startup>();
                 });
