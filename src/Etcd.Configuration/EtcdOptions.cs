@@ -8,9 +8,9 @@ namespace Etcd.Configuration
     public class EtcdOptions
     {
         /// <summary>
-        /// Etcd hosts
+        /// Etcd Connection String
         /// </summary>
-        public List<string> Hosts { get; set; }
+        public string ConnectionString { get; set; }
 
         /// <summary>
         /// config prefixKeys

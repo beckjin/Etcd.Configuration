@@ -1,6 +1,8 @@
 ﻿using dotnet_etcd;
 using Etcdserverpb;
+using Grpc.Core;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,10 +13,10 @@ namespace Etcd.Configuration
     {
         private readonly EtcdOptions _etcdOptions;
         private readonly EtcdClient _etcdClient;
-
+        private readonly Metadata _headers;
         public EtcdConfigurationRepository(EtcdOptions etcdOptions)
         {
-            if (etcdOptions.Hosts == null || !etcdOptions.Hosts.Any())
+            if (string.IsNullOrEmpty(etcdOptions.ConnectionString))
             {
                 throw new ArgumentNullException("etcd hosts can't be null");
             }
@@ -25,22 +27,30 @@ namespace Etcd.Configuration
             }
 
             _etcdOptions = etcdOptions;
-            _etcdClient = new EtcdClient(string.Join(",", _etcdOptions.Hosts),
-                username: _etcdOptions.Username,
-                password: _etcdOptions.Password,
+            _etcdClient = new EtcdClient(etcdOptions.ConnectionString,
                 caCert: _etcdOptions.CaCert,
                 clientCert: _etcdOptions.ClientCert,
                 clientKey: _etcdOptions.ClientKey,
                 publicRootCa: _etcdOptions.PublicRootCa);
+
+            if (!string.IsNullOrEmpty(_etcdOptions.Username) && !string.IsNullOrEmpty(_etcdOptions.Password))
+            {
+                var authRes = _etcdClient.Authenticate(new AuthenticateRequest { Name = _etcdOptions.Username, Password = _etcdOptions.Password });
+
+                _headers = new Metadata
+                {
+                    { "Authorization", authRes.Token }
+                };
+            }
         }
 
         public IDictionary<string, string> GetConfig()
         {
-            var configs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var dict = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             foreach (var prefixKey in _etcdOptions.PrefixKeys)
             {
-                var kvs = _etcdClient.GetRange(prefixKey).Kvs;
+                var kvs = _etcdClient.GetRange(prefixKey, _headers).Kvs;
                 foreach (var item in kvs)
                 {
                     var key = item.Key.ToStringUtf8();
@@ -50,19 +60,23 @@ namespace Etcd.Configuration
                     {
                         key = $"{prefixKey}:{key.Replace(prefixKey, string.Empty)}";
                     }
-
-                    if (configs.ContainsKey(key))
+                    else if (_etcdOptions.KeyMode == EtcdConfigrationKeyMode.Json)
                     {
-                        configs[key] = val;
+                        key = key.Replace(prefixKey, string.Empty);
+                    }
+
+                    if (dict.ContainsKey(key))
+                    {
+                        dict[key] = val;
                     }
                     else
                     {
-                        configs.Add(key, val);
+                        dict.TryAdd(key, val);
                     }
                 }
             }
 
-            return configs;
+            return dict;
         }
 
         public void Watch(IConfigrationWatcher watcher)
@@ -75,7 +89,7 @@ namespace Etcd.Configuration
                     {
                         watcher.FireChange();
                     }
-                });
+                }, _headers);
             });
         }
 
