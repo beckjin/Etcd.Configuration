@@ -19,9 +19,7 @@ PM> Install-Package Etcd.Configuration
 
 ```
 "etcd": {
-  "hosts": [
-    "http://localhost:2379"
-  ],
+  "connectionString": "http://localhost:2379",
   "prefixKeys": [
     "/namespace1/",
     "/namespace2/"
