@@ -10,21 +10,17 @@ namespace Etcd.Configuration.API.Controllers
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
-        private readonly IConfiguration _configuration;
-        private readonly Namespace1Options _namespace1Options;
+        private readonly Namespace1Options _options;
 
-        public WeatherForecastController(IConfiguration configuration,
-            IOptionsSnapshot<Namespace1Options> namespace1Options)
+        public WeatherForecastController(IOptionsSnapshot<Namespace1Options> options)
         {
-            _configuration = configuration;
-            _namespace1Options = namespace1Options.Value;
+            _options = options.Value;
         }
-
 
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
         {
-            return new string[] { _namespace1Options.Name, _namespace1Options.Company };
+            return new string[] { _options.Name, _options.Company };
         }
     }
 }
