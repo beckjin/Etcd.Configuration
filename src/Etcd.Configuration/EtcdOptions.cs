@@ -13,7 +13,12 @@ namespace Etcd.Configuration
         public string ConnectionString { get; set; }
 
         /// <summary>
-        /// config prefixKeys
+        /// Environment. /dev or /uat or /prod  Default : Empty String
+        /// </summary>
+        public string Env { get; set; } = string.Empty;
+
+        /// <summary>
+        /// config prefixKeys, no need to include env value
         /// </summary>
         public List<string> PrefixKeys { get; set; }
 
@@ -48,8 +53,9 @@ namespace Etcd.Configuration
         public bool PublicRootCa { get; set; }
 
         /// <summary>
-        /// Set config key mode
+        /// Set key mode
         /// </summary>
-        public EtcdConfigrationKeyMode KeyMode { get; set; }
+        public EtcdConfigrationKeyMode KeyMode { get; set; } = EtcdConfigrationKeyMode.Default;
+
     }
 }

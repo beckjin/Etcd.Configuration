@@ -18,12 +18,12 @@ namespace Etcd.Configuration
         {
             if (string.IsNullOrEmpty(etcdOptions.ConnectionString))
             {
-                throw new ArgumentNullException("etcd hosts can't be null");
+                throw new ArgumentNullException($"{nameof(etcdOptions.ConnectionString)} can't be null");
             }
 
             if (etcdOptions.PrefixKeys == null || !etcdOptions.PrefixKeys.Any())
             {
-                throw new ArgumentNullException("etcd prefixKeys can't be null");
+                throw new ArgumentNullException($"{nameof(etcdOptions.PrefixKeys)} can't be null");
             }
 
             _etcdOptions = etcdOptions;
@@ -50,7 +50,10 @@ namespace Etcd.Configuration
 
             foreach (var prefixKey in _etcdOptions.PrefixKeys)
             {
-                var kvs = _etcdClient.GetRange(prefixKey, _headers).Kvs;
+                var fullPrefixKey = $"{_etcdOptions.Env}{prefixKey}";
+
+                var kvs = _etcdClient.GetRange(fullPrefixKey, _headers).Kvs;
+
                 foreach (var item in kvs)
                 {
                     var key = item.Key.ToStringUtf8();
@@ -58,11 +61,15 @@ namespace Etcd.Configuration
 
                     if (_etcdOptions.KeyMode == EtcdConfigrationKeyMode.Json)
                     {
-                        key = $"{prefixKey}:{key.Replace(prefixKey, string.Empty)}";
+                        key = $"{prefixKey}:{key.Replace(fullPrefixKey, string.Empty)}";
                     }
-                    else if (_etcdOptions.KeyMode == EtcdConfigrationKeyMode.Json)
+                    else if (_etcdOptions.KeyMode == EtcdConfigrationKeyMode.RemovePrefix)
                     {
-                        key = key.Replace(prefixKey, string.Empty);
+                        key = key.Replace(fullPrefixKey, string.Empty);
+                    }
+                    else
+                    {
+                        key = key.Replace(_etcdOptions.Env, string.Empty);
                     }
 
                     if (dict.ContainsKey(key))
@@ -83,6 +90,11 @@ namespace Etcd.Configuration
         {
             Task.Run(() =>
             {
+                if (!string.IsNullOrEmpty(_etcdOptions.Env))
+                {
+                    _etcdOptions.PrefixKeys = _etcdOptions.PrefixKeys.Select(prefixKey => $"{ _etcdOptions.Env }{prefixKey}").ToList();
+                }
+
                 _etcdClient.WatchRange(_etcdOptions.PrefixKeys.ToArray(), (WatchResponse response) =>
                 {
                     if (response.Events.Count > 0)

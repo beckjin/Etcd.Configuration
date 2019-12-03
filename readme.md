@@ -20,6 +20,7 @@ PM> Install-Package Etcd.Configuration
 ```
 "etcd": {
   "connectionString": "http://localhost:2379",
+  "env": "/dev",
   "prefixKeys": [
     "/namespace1/",
     "/namespace2/"
