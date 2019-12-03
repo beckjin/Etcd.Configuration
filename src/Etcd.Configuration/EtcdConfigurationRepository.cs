@@ -90,12 +90,14 @@ namespace Etcd.Configuration
         {
             Task.Run(() =>
             {
+                var keys = _etcdOptions.PrefixKeys;
+
                 if (!string.IsNullOrEmpty(_etcdOptions.Env))
                 {
-                    _etcdOptions.PrefixKeys = _etcdOptions.PrefixKeys.Select(prefixKey => $"{ _etcdOptions.Env }{prefixKey}").ToList();
+                    keys = _etcdOptions.PrefixKeys.Select(prefixKey => $"{ _etcdOptions.Env }{prefixKey}").ToList();
                 }
 
-                _etcdClient.WatchRange(_etcdOptions.PrefixKeys.ToArray(), (WatchResponse response) =>
+                _etcdClient.WatchRange(keys.ToArray(), (WatchResponse response) =>
                 {
                     if (response.Events.Count > 0)
                     {
