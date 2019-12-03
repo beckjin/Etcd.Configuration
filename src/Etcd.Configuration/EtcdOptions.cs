@@ -53,9 +53,9 @@ namespace Etcd.Configuration
         public bool PublicRootCa { get; set; }
 
         /// <summary>
-        /// Set key mode
+        /// Set key mode Default : Json
         /// </summary>
-        public EtcdConfigrationKeyMode KeyMode { get; set; } = EtcdConfigrationKeyMode.Default;
+        public EtcdConfigrationKeyMode KeyMode { get; set; } = EtcdConfigrationKeyMode.Json;
 
     }
 }
