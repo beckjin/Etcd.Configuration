@@ -1,7 +1,7 @@
 # Features
 
-* Integrate etcd configuration into microsoft.extensions.configuration.
-* Automatically listen for changes and refresh configuration.
+* Integrate etcd configuration into **IConfigurationBuilder**.
+* Listen for etcd configuration changes and automatically refresh the configuration in the application when there are changes.
 
 
 
@@ -31,6 +31,7 @@ PM> Install-Package Etcd.Configuration
   "clientCert": "",      // Default : Empty String
   "clientKey": "",       // Default : Empty String
   "publicRootCa": false, // Default : false
+  "keyMode": 1           // Default : 1, such as "prefixKey:key"
 }
 ```
 
