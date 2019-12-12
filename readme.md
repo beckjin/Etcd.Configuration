@@ -18,20 +18,22 @@ PM> Install-Package Etcd.Configuration
 **The key in the return result will not contain the prefix**
 
 ```
-"etcd": {
-  "connectionString": "http://localhost:2379",
-  "env": "/dev",
-  "prefixKeys": [
-    "/namespace1/",
-    "/namespace2/"
-  ],
-  "username": "",        // Default : Empty String
-  "password": "",        // Default : Empty String
-  "caCert": "",          // Default : Empty String
-  "clientCert": "",      // Default : Empty String
-  "clientKey": "",       // Default : Empty String
-  "publicRootCa": false, // Default : false
-  "keyMode": 1           // Default : 1, such as "prefixKey:key"
+{
+  "etcd": {
+    "connectionString": "http://localhost:2379",
+    "env": "/dev",
+    "prefixKeys": [
+      "/namespace1/",
+      "/namespace2/"
+    ],
+    "username": "",        // Default : Empty String
+    "password": "",        // Default : Empty String
+    "caCert": "",          // Default : Empty String
+    "clientCert": "",      // Default : Empty String
+    "clientKey": "",       // Default : Empty String
+    "publicRootCa": false, // Default : false
+    "keyMode": 1           // Default : 1, such as "prefixKey:key"
+  }
 }
 ```
 
