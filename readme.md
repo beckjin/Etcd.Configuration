@@ -48,7 +48,7 @@ public static IHostBuilder CreateHostBuilder(string[] args) =>
     {
       webBuilder.ConfigureAppConfiguration(builder =>
       {
-        builder.AddEtcd(builder.Build().GetSection("etcd")); // Just one line of code
+        builder.AddEtcd(builder.Build().GetSection("etcd")); 
       });
       webBuilder.UseStartup<Startup>();
     });
