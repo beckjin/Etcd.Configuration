@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
+using System;
 
 namespace Etcd.Configuration
 {
@@ -7,17 +8,27 @@ namespace Etcd.Configuration
     {
         private readonly IConfigrationRepository _configRepository;
 
-        public EtcdConfigurationProvider(IConfigrationRepository configRepository, bool reloadOnChange)
+        public EtcdConfigurationProvider(IConfigrationRepository configRepository, bool reloadOnChange, Action<IConfigurationRoot> actionOnChange)
         {
             _configRepository = configRepository;
 
-            if (reloadOnChange)
+            if (reloadOnChange || actionOnChange != null)
             {
                 _configRepository.Watch(this);
 
                 ChangeToken.OnChange(
                     () => GetReloadToken(),
-                    () => Load()
+                    () =>
+                    {
+                        Load();
+
+                        //return the latest configuration
+                        if (actionOnChange != null)
+                        {
+                            var builder = new ConfigurationBuilder().AddInMemoryCollection(Data).Build();
+                            actionOnChange.Invoke(builder);
+                        }
+                    }
                 );
             }
         }
