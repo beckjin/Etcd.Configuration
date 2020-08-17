@@ -96,14 +96,16 @@ namespace Etcd.Configuration
                 {
                     keys = _etcdOptions.PrefixKeys.Select(prefixKey => $"{ _etcdOptions.Env }{prefixKey}").ToList();
                 }
-
                 _etcdClient.WatchRange(keys.ToArray(), (WatchResponse response) =>
                 {
                     if (response.Events.Count > 0)
                     {
                         watcher.FireChange();
                     }
-                }, _headers);
+                }, _headers, (ex) =>
+                {
+                    Console.WriteLine(ex.Message + Environment.NewLine + ex.StackTrace);
+                });
             });
         }
 
