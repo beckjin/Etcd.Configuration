@@ -61,7 +61,7 @@ namespace Etcd.Configuration
 
                     if (_etcdOptions.KeyMode == EtcdConfigrationKeyMode.Json)
                     {
-                        key = $"{prefixKey}:{key.Replace(fullPrefixKey, string.Empty)}";
+                        key = $"{prefixKey}:{key.Replace(fullPrefixKey, string.Empty).Replace("/", ":")}";
                     }
                     else if (_etcdOptions.KeyMode == EtcdConfigrationKeyMode.RemovePrefix)
                     {
