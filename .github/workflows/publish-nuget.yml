@@ -28,7 +28,7 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --configuration Release --no-restore
-    - name: Publish FluentEmail.Core
+    - name: Publish Etcd.Configuration
       uses: brandedoutcast/publish-nuget@v2.5.2
       with:
           PROJECT_FILE_PATH: src/Etcd.Configuration/Etcd.Configuration.csproj
