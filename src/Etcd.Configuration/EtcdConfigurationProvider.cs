@@ -7,29 +7,28 @@ namespace Etcd.Configuration
     public class EtcdConfigurationProvider : ConfigurationProvider, IConfigurationSource, IConfigrationWatcher
     {
         private readonly IConfigrationRepository _configRepository;
+        private readonly Action<IConfigurationRoot> _actionOnChange;
 
         public EtcdConfigurationProvider(IConfigrationRepository configRepository, bool reloadOnChange, Action<IConfigurationRoot> actionOnChange)
         {
             _configRepository = configRepository;
+            _actionOnChange = actionOnChange;
 
             if (reloadOnChange || actionOnChange != null)
             {
                 _configRepository.Watch(this);
+            }
+        }
 
-                ChangeToken.OnChange(
-                    () => GetReloadToken(),
-                    () =>
-                    {
-                        Load();
+        private void Reload()
+        {
+            Load();
 
-                        //return the latest configuration
-                        if (actionOnChange != null)
-                        {
-                            var builder = new ConfigurationBuilder().AddInMemoryCollection(Data).Build();
-                            actionOnChange.Invoke(builder);
-                        }
-                    }
-                );
+            //return the latest configuration
+            if (_actionOnChange != null)
+            {
+                var builder = new ConfigurationBuilder().AddInMemoryCollection(Data).Build();
+                _actionOnChange.Invoke(builder);
             }
         }
 
@@ -38,7 +37,11 @@ namespace Etcd.Configuration
             Data = _configRepository.GetConfig();
         }
 
-        public void FireChange() => OnReload();
+        public void FireChange()
+        {
+            this.Reload();
+            this.OnReload();
+        }
 
         public IConfigurationProvider Build(IConfigurationBuilder builder) => this;
     }

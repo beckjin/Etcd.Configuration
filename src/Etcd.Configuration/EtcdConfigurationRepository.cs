@@ -61,7 +61,7 @@ namespace Etcd.Configuration
 
                     if (_etcdOptions.KeyMode == EtcdConfigrationKeyMode.Json)
                     {
-                        key = $"{prefixKey}:{key.Replace(fullPrefixKey, string.Empty)}";
+                        key = $"{prefixKey}:{key.Replace(fullPrefixKey, string.Empty).Replace("/", ":")}";
                     }
                     else if (_etcdOptions.KeyMode == EtcdConfigrationKeyMode.RemovePrefix)
                     {
@@ -96,16 +96,21 @@ namespace Etcd.Configuration
                 {
                     keys = _etcdOptions.PrefixKeys.Select(prefixKey => $"{ _etcdOptions.Env }{prefixKey}").ToList();
                 }
-                _etcdClient.WatchRange(keys.ToArray(), (WatchResponse response) =>
+
+                try
                 {
-                    if (response.Events.Count > 0)
+                    this._etcdClient.WatchRange(keys.ToArray(), (WatchResponse response) =>
                     {
-                        watcher.FireChange();
-                    }
-                }, _headers, (ex) =>
+                        if (response.Events.Count > 0)
+                        {
+                            watcher.FireChange();
+                        }
+                    }, _headers);
+                }
+                catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message + Environment.NewLine + ex.StackTrace);
-                });
+                }
             });
         }
 
