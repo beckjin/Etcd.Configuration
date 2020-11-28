@@ -99,7 +99,7 @@ namespace Etcd.Configuration
 
                 try
                 {
-                    this._etcdClient.WatchRange(keys.ToArray(), (WatchResponse response) =>
+                    _etcdClient.WatchRange(keys.ToArray(), (WatchResponse response) =>
                     {
                         if (response.Events.Count > 0)
                         {

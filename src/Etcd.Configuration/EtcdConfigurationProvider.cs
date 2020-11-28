@@ -39,8 +39,8 @@ namespace Etcd.Configuration
 
         public void FireChange()
         {
-            this.Reload();
-            this.OnReload();
+            Reload();
+            OnReload();
         }
 
         public IConfigurationProvider Build(IConfigurationBuilder builder) => this;
