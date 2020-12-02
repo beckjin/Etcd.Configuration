@@ -1,8 +1,11 @@
-﻿namespace Etcd.Configuration
+﻿using System;
+
+namespace Etcd.Configuration
 {
     /// <summary>
     /// Key Modes
     /// </summary>
+    [Flags]
     public enum EtcdConfigrationKeyMode
     {
         /// <summary>

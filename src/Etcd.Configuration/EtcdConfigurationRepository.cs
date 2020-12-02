@@ -59,15 +59,24 @@ namespace Etcd.Configuration
                     var key = item.Key.ToStringUtf8();
                     var val = item.Value.ToStringUtf8();
 
-                    if (_etcdOptions.KeyMode == EtcdConfigrationKeyMode.Json)
+                    var removePrefix = _etcdOptions.KeyMode.HasFlag(EtcdConfigrationKeyMode.RemovePrefix);
+
+                    if (_etcdOptions.KeyMode.HasFlag(EtcdConfigrationKeyMode.Json))
                     {
-                        key = $"{prefixKey}:{key.Replace(fullPrefixKey, string.Empty).Replace("/", ":")}";
+                        if (removePrefix)
+                        {
+                            key = $"{key.Replace(fullPrefixKey, string.Empty).Replace("/", ":")}";
+                        }
+                        else
+                        {
+                            key = $"{prefixKey}:{key.Replace(fullPrefixKey, string.Empty).Replace("/", ":")}";
+                        }
                     }
-                    else if (_etcdOptions.KeyMode == EtcdConfigrationKeyMode.RemovePrefix)
+                    else if (removePrefix)
                     {
                         key = key.Replace(fullPrefixKey, string.Empty);
                     }
-                    else
+                    else if(this._etcdOptions.Env != string.Empty)
                     {
                         key = key.Replace(_etcdOptions.Env, string.Empty);
                     }
