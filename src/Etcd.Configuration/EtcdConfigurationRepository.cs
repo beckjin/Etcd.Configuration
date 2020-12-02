@@ -1,4 +1,4 @@
-﻿using dotnet_etcd;
+using dotnet_etcd;
 using Etcdserverpb;
 using Grpc.Core;
 using System;
@@ -67,7 +67,7 @@ namespace Etcd.Configuration
                     {
                         key = key.Replace(fullPrefixKey, string.Empty);
                     }
-                    else
+                    else if(this._etcdOptions.Env != string.Empty)
                     {
                         key = key.Replace(_etcdOptions.Env, string.Empty);
                     }
