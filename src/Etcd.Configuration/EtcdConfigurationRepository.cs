@@ -88,7 +88,7 @@ namespace Etcd.Configuration
 
         public void Watch(IConfigrationWatcher watcher)
         {
-            Task.Run(() =>
+            Task.Run(async () =>
             {
                 var keys = _etcdOptions.PrefixKeys;
 
@@ -97,19 +97,29 @@ namespace Etcd.Configuration
                     keys = _etcdOptions.PrefixKeys.Select(prefixKey => $"{ _etcdOptions.Env }{prefixKey}").ToList();
                 }
 
-                try
+                while (true)
                 {
-                    _etcdClient.WatchRange(keys.ToArray(), (WatchResponse response) =>
+                    try
                     {
-                        if (response.Events.Count > 0)
+                        var isFirstConnection = true;
+                        _etcdClient.WatchRange(keys.ToArray(), (WatchResponse response) =>
                         {
-                            watcher.FireChange();
-                        }
-                    }, _headers);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message + Environment.NewLine + ex.StackTrace);
+                            // After a disconnection you get a created connection first wihtout events. After a disconnection we want the values, cause they could changed
+                            if (response.Events.Count > 0 || isFirstConnection)
+                            {
+                                isFirstConnection = false;
+                                watcher.FireChange();
+                            }
+                        }, _headers);
+
+                        return;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message + Environment.NewLine + ex.StackTrace);
+                    }
+
+                    await Task.Delay(this._etcdOptions.RewatchTimeoutInMs);
                 }
             });
         }

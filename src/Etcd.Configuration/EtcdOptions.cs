@@ -13,6 +13,11 @@ namespace Etcd.Configuration
         public string ConnectionString { get; set; }
 
         /// <summary>
+        /// Timeout [in milliseconds] after disconnection to wait before try watch keys again.
+        /// </summary>
+        public int RewatchTimeoutInMs { get; set; } = 10000;
+
+        /// <summary>
         /// Environment. /dev or /uat or /prod  Default : Empty String
         /// </summary>
         public string Env { get; set; } = string.Empty;
