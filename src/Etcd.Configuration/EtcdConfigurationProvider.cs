@@ -34,7 +34,14 @@ namespace Etcd.Configuration
 
         public override void Load()
         {
-            Data = _configRepository.GetConfig();
+            try
+            {
+                Data = _configRepository.GetConfig();
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message + Environment.NewLine + ex.StackTrace);
+            }
         }
 
         public void FireChange()
